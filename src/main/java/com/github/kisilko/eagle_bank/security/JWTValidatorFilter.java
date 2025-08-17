@@ -24,7 +24,7 @@ import static com.github.kisilko.eagle_bank.security.SecurityConstants.AUTHORIZA
 import static com.github.kisilko.eagle_bank.security.SecurityConstants.BEARER_PREFIX;
 
 @Component
-public class JWTValidatorFilter extends OncePerRequestFilter {
+class JWTValidatorFilter extends OncePerRequestFilter {
 
     @Value("${jwt.secret}")
     private String jwtSecret; // for demo purpose only

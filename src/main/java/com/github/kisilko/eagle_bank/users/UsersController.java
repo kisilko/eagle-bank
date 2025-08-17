@@ -1,12 +1,13 @@
 package com.github.kisilko.eagle_bank.users;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,12 @@ class UsersController {
         this.usersModelAssembler = usersModelAssembler;
     }
 
+    @Operation(summary = "Get user details", description = "Returns user by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @GetMapping("{userId}")
     public ResponseEntity<EntityModel<User>> userDetails(@PathVariable Long userId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -41,6 +48,12 @@ class UsersController {
         return ResponseEntity.ok(usersModelAssembler.toModel(user));
     }
 
+    @Operation(summary = "Create user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @PostMapping
     public ResponseEntity<EntityModel<User>> createUser(@Valid @RequestBody UserCreateRequest userCreateRequest) {
         User newUser = usersService.createUser(userCreateRequest);
@@ -49,6 +62,10 @@ class UsersController {
                 .body(userModel);
     }
 
+    @Operation(summary = "Update user")
+    @ApiResponse(responseCode = "200", description = "User updated")
+    @ApiResponse(responseCode = "403", description = "Forbidden")
+    @ApiResponse(responseCode = "404", description = "User not found")
     @PatchMapping("/{userId}")
     public ResponseEntity<EntityModel<User>> updateUserDetails(@PathVariable Long userId,
                                                @RequestBody UserUpdateRequest userUpdateRequest) {
@@ -67,6 +84,11 @@ class UsersController {
         return ResponseEntity.ok(usersModelAssembler.toModel(updatedUser));
     }
 
+
+    @Operation(summary = "Delete user")
+    @ApiResponse(responseCode = "204", description = "User deleted")
+    @ApiResponse(responseCode = "403", description = "Forbidden")
+    @ApiResponse(responseCode = "404", description = "User not found")
     @DeleteMapping("/{userId}")
     public ResponseEntity<ResponseEntity<Void>> deleteUser(@PathVariable Long userId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

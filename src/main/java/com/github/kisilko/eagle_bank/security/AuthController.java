@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
-public class AuthController {
+class AuthController {
 
     private final UsersService usersService;
     private final PasswordEncoder passwordEncoder;

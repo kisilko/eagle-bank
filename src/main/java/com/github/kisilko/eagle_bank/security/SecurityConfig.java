@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+class SecurityConfig {
 
     private final JWTValidatorFilter jwtValidatorFilter;
 
@@ -28,7 +28,7 @@ public class SecurityConfig {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/v1/users").permitAll() // allow user creation
-                        .requestMatchers("/", "/healthcheck/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/", "/healthcheck/**", "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )

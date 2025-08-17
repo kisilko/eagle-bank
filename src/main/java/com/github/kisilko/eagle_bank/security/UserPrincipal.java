@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class UserPrincipal implements UserDetails {
+class UserPrincipal implements UserDetails {
 
     private final Long id;
     private final String email;

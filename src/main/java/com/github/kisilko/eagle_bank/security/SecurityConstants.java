@@ -1,6 +1,6 @@
 package com.github.kisilko.eagle_bank.security;
 
-public class SecurityConstants {
+class SecurityConstants {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
