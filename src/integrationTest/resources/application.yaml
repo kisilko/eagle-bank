@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: eagle-bank
   datasource:
     url: jdbc:h2:mem:mydb
     username: sa
