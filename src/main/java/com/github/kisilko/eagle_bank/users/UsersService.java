@@ -12,29 +12,17 @@ import java.util.Optional;
 public class UsersService {
 
     private static final List<String> USER_DEFAULT_ROLES = List.of("USER");
-    private static final List<String> ADMIN_DEFAULT_ROLES = List.of("ADMIN");
 
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User creatUser(UserCreateRequest userCreateRequest) {
+    public User createUser(UserCreateRequest userCreateRequest) {
         String hashedPassword = passwordEncoder.encode(userCreateRequest.password());
         User newUser = User.builder()
                 .name(userCreateRequest.name())
                 .email(userCreateRequest.email())
                 .password(hashedPassword)
                 .roles(USER_DEFAULT_ROLES)
-                .build();
-        return usersRepository.save(newUser);
-    }
-
-    public User createAdmin(UserCreateRequest userCreateRequest) {
-        String hashedPassword = passwordEncoder.encode(userCreateRequest.password());
-        User newUser = User.builder()
-                .name(userCreateRequest.name())
-                .email(userCreateRequest.email())
-                .password(hashedPassword)
-                .roles(ADMIN_DEFAULT_ROLES)
                 .build();
         return usersRepository.save(newUser);
     }
@@ -61,5 +49,15 @@ public class UsersService {
 
     public Optional<User> findByEmail(String email) {
         return usersRepository.findByEmail(email);
+    }
+
+    public boolean existsById(Long userId) {
+        return usersRepository.existsById(userId);
+    }
+
+    public boolean isCurrentUser(Long userId, String email) {
+        return usersRepository.findById(userId)
+                .map(user -> user.getEmail().equals(email))
+                .orElse(false);
     }
 }

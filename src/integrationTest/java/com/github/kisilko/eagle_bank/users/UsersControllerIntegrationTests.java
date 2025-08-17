@@ -62,8 +62,6 @@ public class UsersControllerIntegrationTests {
                     assertThat(response.name()).isEqualTo("Alice Johnson");
                     assertThat(response.email()).isEqualTo("alice.johnson@example.com");
                 });
-
-        String secretPass = getToken("alice.johnson@example.com", "secret_pass");
     }
 
     @Test
@@ -95,7 +93,7 @@ public class UsersControllerIntegrationTests {
 
     @Test
     void itFetchesTheExistingUserDetails() {
-        User existingUser = usersService.creatUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
+        User existingUser = usersService.createUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
 
         MvcTestResult testResult = mockMvcTester
                 .get()
@@ -116,8 +114,8 @@ public class UsersControllerIntegrationTests {
 
     @Test
     void itReturnsForbiddenWhenAccessingAnotherUsersData() {
-        User existingUser1 = usersService.creatUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
-        User existingUser2 = usersService.creatUser(new UserCreateRequest("Carlos Rivera", "carlos.rivera@example.com", "pass"));
+        User existingUser1 = usersService.createUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
+        User existingUser2 = usersService.createUser(new UserCreateRequest("Carlos Rivera", "carlos.rivera@example.com", "pass"));
 
         String jwtForUser1 = getToken("john.doe@example.com", "pass");
 
@@ -133,13 +131,13 @@ public class UsersControllerIntegrationTests {
 
     @Test
     void itReturnsNotFoundWhenUserDoesNotExist() {
-        User admin = usersService.createAdmin(new UserCreateRequest("Superuser", "superuser@example.com", "root_pass"));
+        usersService.createUser(new UserCreateRequest("Just User", "user@example.com", "some_pass"));
         var nonExistentUserId = 42;
 
         MvcTestResult testResult = mockMvcTester
                 .get()
                 .uri("/v1/users/{userId}", nonExistentUserId)
-                .header("Authorization", "Bearer " + getToken("superuser@example.com", "root_pass"))
+                .header("Authorization", "Bearer " + getToken("user@example.com", "some_pass"))
                 .exchange();
 
         assertThat(testResult)
@@ -153,7 +151,7 @@ public class UsersControllerIntegrationTests {
 
     @Test
     void itUpdatesUserDetailsWhenPatchRequestIsValid() {
-        User existingUser = usersService.creatUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
+        User existingUser = usersService.createUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
         String newUserName = "Bob Smith"; // let's assume we allow to change name
         String newUserDetails = "{\"name\": \"%s\"}".formatted(newUserName);
 
@@ -178,8 +176,8 @@ public class UsersControllerIntegrationTests {
 
     @Test
     void itReturnsForbiddenWhenPatchingAnotherUsersData() {
-        User existingUser1 = usersService.creatUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
-        User existingUser2 = usersService.creatUser(new UserCreateRequest("Carlos Rivera", "carlos.rivera@example.com", "pass"));
+        User existingUser1 = usersService.createUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
+        User existingUser2 = usersService.createUser(new UserCreateRequest("Carlos Rivera", "carlos.rivera@example.com", "pass"));
 
         String jwtForUser1 = getToken("john.doe@example.com", "pass");
         String newUserDetails = "{\"name\": \"Bob Smith\"}";
@@ -198,7 +196,7 @@ public class UsersControllerIntegrationTests {
 
     @Test
     void itReturnsNotFoundWhenPatchingNonExistingUser() {
-        User admin = usersService.createAdmin(new UserCreateRequest("Superuser", "superuser@example.com", "root_pass"));
+        usersService.createUser(new UserCreateRequest("test user", "testuser@example.com", "pass"));
         var nonExistentUserId = 42;
         String newUserName = "Bob Smith"; // let's assume we allow to change name
         String newUserDetails = "{\"name\": \"%s\"}".formatted(newUserName);
@@ -206,7 +204,7 @@ public class UsersControllerIntegrationTests {
         MvcTestResult testResult = mockMvcTester
                 .patch()
                 .uri("/v1/users/{userId}", nonExistentUserId)
-                .header("Authorization", "Bearer " + getToken("superuser@example.com", "root_pass"))
+                .header("Authorization", "Bearer " + getToken("testuser@example.com", "pass"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newUserDetails)
                 .exchange();
@@ -222,7 +220,7 @@ public class UsersControllerIntegrationTests {
 
     @Test
     void itDeletesExistingUserWithoutBankAccount() {
-        User existingUser = usersService.creatUser(new UserCreateRequest("Carlos Rivera", "carlos.rivera@example.com", "pass"));
+        User existingUser = usersService.createUser(new UserCreateRequest("Carlos Rivera", "carlos.rivera@example.com", "pass"));
 
         MvcTestResult testResult = mockMvcTester
                 .delete()
@@ -236,8 +234,8 @@ public class UsersControllerIntegrationTests {
 
     @Test
     void itReturnsForbiddenWhenDeletingAnotherUsers() {
-        User existingUser1 = usersService.creatUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
-        User existingUser2 = usersService.creatUser(new UserCreateRequest("Carlos Rivera", "carlos.rivera@example.com", "pass"));
+        User existingUser1 = usersService.createUser(new UserCreateRequest("John Doe", "john.doe@example.com", "pass"));
+        User existingUser2 = usersService.createUser(new UserCreateRequest("Carlos Rivera", "carlos.rivera@example.com", "pass"));
 
         String jwtForUser1 = getToken("john.doe@example.com", "pass");
 
@@ -253,13 +251,13 @@ public class UsersControllerIntegrationTests {
 
     @Test
     void itReturnsNotFoundWhenDeletingNonExistingUser() {
-        User admin = usersService.createAdmin(new UserCreateRequest("Superuser", "superuser@example.com", "root_pass"));
+        usersService.createUser(new UserCreateRequest("New User", "newuser@example.com", "new_pass"));
         var nonExistentUserId = 999;
 
         MvcTestResult testResult = mockMvcTester
                 .delete()
                 .uri("/v1/users/{userId}", nonExistentUserId)
-                .header("Authorization", "Bearer " + getToken("superuser@example.com", "root_pass"))
+                .header("Authorization", "Bearer " + getToken("newuser@example.com", "new_pass"))
                 .exchange();
 
         assertThat(testResult)
