@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/users")
+@RequiredArgsConstructor
 class UserController {
 
     private final UserService userService;
     private final UserModelAssembler userModelAssembler;
-
-    public UserController(UserService userService, UserModelAssembler userModelAssembler) {
-        this.userService = userService;
-        this.userModelAssembler = userModelAssembler;
-    }
 
     @Operation(summary = "Get user details", description = "Returns user by ID")
     @ApiResponses({
@@ -50,9 +47,7 @@ class UserController {
 
     @Operation(summary = "Create user")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User found"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "User not found")
+            @ApiResponse(responseCode = "201", description = "User created")
     })
     @PostMapping
     public ResponseEntity<EntityModel<User>> createUser(@Valid @RequestBody UserCreateRequest userCreateRequest) {
@@ -62,7 +57,7 @@ class UserController {
                 .body(userModel);
     }
 
-    @Operation(summary = "Update user")
+    @Operation(summary = "Update user details")
     @ApiResponse(responseCode = "200", description = "User updated")
     @ApiResponse(responseCode = "403", description = "Forbidden")
     @ApiResponse(responseCode = "404", description = "User not found")
