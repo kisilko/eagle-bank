@@ -1,7 +1,7 @@
 package com.github.kisilko.eagle_bank.security;
 
-import com.github.kisilko.eagle_bank.users.User;
-import com.github.kisilko.eagle_bank.users.UsersService;
+import com.github.kisilko.eagle_bank.user.User;
+import com.github.kisilko.eagle_bank.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,13 +16,13 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 class AuthController {
 
-    private final UsersService usersService;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
 
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest request) {
-        User user = usersService.findByEmail(request.email())
+        User user = userService.findByEmail(request.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {

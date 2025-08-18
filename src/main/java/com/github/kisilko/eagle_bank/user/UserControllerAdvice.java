@@ -1,4 +1,4 @@
-package com.github.kisilko.eagle_bank.users;
+package com.github.kisilko.eagle_bank.user;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 import java.util.Map;
 
-@RestControllerAdvice(assignableTypes = {UsersController.class})
-class UsersControllerAdvice {
+@RestControllerAdvice(assignableTypes = {UserController.class})
+class UserControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentNotValidException.class})

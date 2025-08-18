@@ -1,4 +1,4 @@
-package com.github.kisilko.eagle_bank.users;
+package com.github.kisilko.eagle_bank.user;
 
 public record UserResponse(
         Long id,

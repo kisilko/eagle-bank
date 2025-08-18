@@ -1,4 +1,4 @@
-package com.github.kisilko.eagle_bank.users;
+package com.github.kisilko.eagle_bank.user;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/users")
-class UsersController {
+class UserController {
 
-    private final UsersService usersService;
-    private final UsersModelAssembler usersModelAssembler;
+    private final UserService userService;
+    private final UserModelAssembler userModelAssembler;
 
-    public UsersController(UsersService usersService, UsersModelAssembler usersModelAssembler) {
-        this.usersService = usersService;
-        this.usersModelAssembler = usersModelAssembler;
+    public UserController(UserService userService, UserModelAssembler userModelAssembler) {
+        this.userService = userService;
+        this.userModelAssembler = userModelAssembler;
     }
 
     @Operation(summary = "Get user details", description = "Returns user by ID")
@@ -35,17 +35,17 @@ class UsersController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUser = (UserDetails) auth.getPrincipal();
 
-        if (!usersService.existsById(userId)) {
+        if (!userService.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
 
-        if (!usersService.isCurrentUser(userId, currentUser.getUsername())) { // in our case getUsername() returns email
+        if (!userService.isCurrentUser(userId, currentUser.getUsername())) { // in our case getUsername() returns email
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        User user = usersService.findById(userId)
+        User user = userService.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
-        return ResponseEntity.ok(usersModelAssembler.toModel(user));
+        return ResponseEntity.ok(userModelAssembler.toModel(user));
     }
 
     @Operation(summary = "Create user")
@@ -56,8 +56,8 @@ class UsersController {
     })
     @PostMapping
     public ResponseEntity<EntityModel<User>> createUser(@Valid @RequestBody UserCreateRequest userCreateRequest) {
-        User newUser = usersService.createUser(userCreateRequest);
-        EntityModel<User> userModel = usersModelAssembler.toModel(newUser);
+        User newUser = userService.createUser(userCreateRequest);
+        EntityModel<User> userModel = userModelAssembler.toModel(newUser);
         return ResponseEntity.created(userModel.getRequiredLink("self").toUri())
                 .body(userModel);
     }
@@ -72,16 +72,16 @@ class UsersController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUser = (UserDetails) auth.getPrincipal();
 
-        if (!usersService.existsById(userId)) {
+        if (!userService.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
 
-        if (!usersService.isCurrentUser(userId, currentUser.getUsername())) { // in our case getUsername() returns email
+        if (!userService.isCurrentUser(userId, currentUser.getUsername())) { // in our case getUsername() returns email
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        User updatedUser = usersService.updateUser(userId, userUpdateRequest);
-        return ResponseEntity.ok(usersModelAssembler.toModel(updatedUser));
+        User updatedUser = userService.updateUser(userId, userUpdateRequest);
+        return ResponseEntity.ok(userModelAssembler.toModel(updatedUser));
     }
 
 
@@ -94,15 +94,15 @@ class UsersController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails currentUser = (UserDetails) auth.getPrincipal();
 
-        if (!usersService.existsById(userId)) {
+        if (!userService.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
 
-        if (!usersService.isCurrentUser(userId, currentUser.getUsername())) { // in our case getUsername() returns email
+        if (!userService.isCurrentUser(userId, currentUser.getUsername())) { // in our case getUsername() returns email
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        usersService.deleteUser(userId);
+        userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 }
