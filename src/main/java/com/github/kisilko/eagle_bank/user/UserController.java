@@ -30,7 +30,7 @@ class UserController {
     @GetMapping("{userId}")
     public ResponseEntity<EntityModel<User>> userDetails(@PathVariable Long userId) {
 
-        if (!userService.existsById(userId)) {
+        if (userService.notExistsById(userId)) {
             throw new UserNotFoundException(userId);
         }
 
@@ -59,7 +59,7 @@ class UserController {
     public ResponseEntity<EntityModel<User>> updateUserDetails(@PathVariable Long userId,
                                                @RequestBody UserUpdateRequest userUpdateRequest) {
 
-        if (!userService.existsById(userId)) {
+        if (userService.notExistsById(userId)) {
             throw new UserNotFoundException(userId);
         }
 
@@ -75,7 +75,7 @@ class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ResponseEntity<Void>> deleteUser(@PathVariable Long userId) {
 
-        if (!userService.existsById(userId)) {
+        if (userService.notExistsById(userId)) {
             throw new UserNotFoundException(userId);
         }
 

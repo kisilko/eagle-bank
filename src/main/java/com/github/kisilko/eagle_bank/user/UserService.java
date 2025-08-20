@@ -46,9 +46,6 @@ public class UserService {
 
     @PreAuthorize("principal.getId().equals(#userId)")
     public void deleteUser(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
-        }
         userRepository.deleteById(userId);
     }
 
@@ -58,5 +55,9 @@ public class UserService {
 
     public boolean existsById(Long userId) {
         return userRepository.existsById(userId);
+    }
+
+    public boolean notExistsById(Long userId) {
+        return !existsById(userId);
     }
 }
