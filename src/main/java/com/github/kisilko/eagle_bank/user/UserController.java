@@ -29,15 +29,9 @@ class UserController {
     })
     @GetMapping("{userId}")
     public ResponseEntity<EntityModel<User>> userDetails(@PathVariable Long userId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails currentUser = (UserDetails) auth.getPrincipal();
 
         if (!userService.existsById(userId)) {
             throw new UserNotFoundException(userId);
-        }
-
-        if (!userService.isCurrentUser(userId, currentUser.getUsername())) { // in our case getUsername() returns email
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         User user = userService.findById(userId)
@@ -64,15 +58,9 @@ class UserController {
     @PatchMapping("/{userId}")
     public ResponseEntity<EntityModel<User>> updateUserDetails(@PathVariable Long userId,
                                                @RequestBody UserUpdateRequest userUpdateRequest) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails currentUser = (UserDetails) auth.getPrincipal();
 
         if (!userService.existsById(userId)) {
             throw new UserNotFoundException(userId);
-        }
-
-        if (!userService.isCurrentUser(userId, currentUser.getUsername())) { // in our case getUsername() returns email
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         User updatedUser = userService.updateUser(userId, userUpdateRequest);
@@ -86,15 +74,9 @@ class UserController {
     @ApiResponse(responseCode = "404", description = "User not found")
     @DeleteMapping("/{userId}")
     public ResponseEntity<ResponseEntity<Void>> deleteUser(@PathVariable Long userId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails currentUser = (UserDetails) auth.getPrincipal();
 
         if (!userService.existsById(userId)) {
             throw new UserNotFoundException(userId);
-        }
-
-        if (!userService.isCurrentUser(userId, currentUser.getUsername())) { // in our case getUsername() returns email
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         userService.deleteUser(userId);

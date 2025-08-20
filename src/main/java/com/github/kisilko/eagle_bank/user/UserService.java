@@ -1,6 +1,8 @@
 package com.github.kisilko.eagle_bank.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +29,12 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
+    @PreAuthorize("principal.getId().equals(#userId)")
     public Optional<User> findById(Long userId) {
         return userRepository.findById(userId);
     }
 
+    @PreAuthorize("principal.getId().equals(#userId)")
     public User updateUser(Long userId, UserUpdateRequest userUpdateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
@@ -40,6 +44,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("principal.getId().equals(#userId)")
     public void deleteUser(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
@@ -53,11 +58,5 @@ public class UserService {
 
     public boolean existsById(Long userId) {
         return userRepository.existsById(userId);
-    }
-
-    public boolean isCurrentUser(Long userId, String email) {
-        return userRepository.findById(userId)
-                .map(user -> user.getEmail().equals(email))
-                .orElse(false);
     }
 }
