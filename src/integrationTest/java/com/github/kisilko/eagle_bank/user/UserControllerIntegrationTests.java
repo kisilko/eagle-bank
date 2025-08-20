@@ -172,6 +172,8 @@ public class UserControllerIntegrationTests {
                     assertThat(response.name()).isEqualTo(newUserName);
                     assertThat(response.email()).isEqualTo(existingUser.getEmail());
                 });
+        User userFromDb = userRepository.findById(existingUser.getId()).orElseThrow(() -> new AssertionError("Missing user data in db"));
+        assertThat(userFromDb.getName()).isEqualTo(newUserName);
     }
 
     @Test
